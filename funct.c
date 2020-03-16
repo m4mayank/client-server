@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/sysctl.h>
+#include <strings.h>
+#include <ctype.h>
 
 /* from stack overfow
  * link : https://stackoverflow.com/questions/23618316/undefined-reference-to-strlwr
@@ -26,12 +28,16 @@ struct message {
   char msg[20];
 };
 
+void	 err_sys(const char *, ...);
 #define MAXLINE 4096
+#define	SA	struct sockaddr
+#define	LISTENQ		1024	/* 2nd argument to listen() */
+/*
 #define bzero(ptr,n) memset(ptr, 0, n)
+*/
 
 /* include Socket */
-int
-Socket(int family, int type, int protocol)
+int Socket(int family, int type, int protocol)
 {
   int n;
   if((n=socket(family, type, protocol)) < 0)
@@ -46,8 +52,7 @@ void Bind(int fd, const struct sockaddr *sa, socklen_t salen){
 }
 
 /* include Listen */
-void
-Listen(int fd, int backlog)
+void Listen(int fd, int backlog)
 {
     char  *ptr;
     if((ptr=getenv("LISTENQ"))!=NULL)

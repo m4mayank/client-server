@@ -4,11 +4,12 @@
 #include <sys/socket.h>
 #include <netdb.h>
 #include <ctype.h>
-#include "funct.c""
+//#include "funct.c""
 
 /* from stack overfow
  * link : https://stackoverflow.com/questions/23618316/undefined-reference-to-strlwr
-char *strlwr(char *str)
+ */
+ char *strlwr(char *str)
 {
   unsigned char *p = (unsigned char *)str;
   while (*p) {
@@ -17,16 +18,14 @@ char *strlwr(char *str)
   }
   return str;
 }
-*/
 
 /*struct for the message
-
+ */
 struct message {
   int msg_header;
   char msg[20];
 
 };
-*/
 
 int main(int argc, char *argv[]){
   struct hostent *hp;

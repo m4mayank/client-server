@@ -55,3 +55,50 @@ void format_string(char sti[]){
   strcat(formatted_string, sti);
   strcpy(sti,formatted_string);
 }
+
+void Bind(int fd, const struct sockaddr *sa, socklen_t salen)
+{
+    if (bind(fd, sa, salen) < 0){
+          perror("Bind");
+          close(fd);
+          exit(1);
+    }
+}
+
+int Socket(int family, int type, int protocol)
+{
+    int n;
+    if ((n = socket(family, type, protocol)) < 0){
+            perror("Socket");
+            exit(1);
+    }
+    return(n);
+}
+
+int Accept(int fd, struct sockaddr *sa, socklen_t *salenptr)
+{
+    int n;
+
+again:
+      if ( (n = accept(fd, sa, salenptr)) < 0) {
+#ifdef  EPROTO
+            if (errno == EPROTO || errno == ECONNABORTED)
+#else
+            if (errno == ECONNABORTED)
+#endif
+              goto again;
+            else
+              perror("Accept error");
+      }
+      return(n);
+}
+
+void
+Connect(int fd, const struct sockaddr *sa, socklen_t salen)
+{
+	if (connect(fd, sa, salen) < 0){
+    perror("Error connecting to the Server");
+    close(fd);
+    exit(1);
+  }
+}

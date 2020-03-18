@@ -32,7 +32,7 @@ int main(int argc, char *argv[]){
   }
   //create a socket
   int network_socket;
-  network_socket = socket(AF_INET, SOCK_STREAM, 0);
+  network_socket = Socket(AF_INET, SOCK_STREAM, 0);
 
   //specify an address for the socket
   struct sockaddr_in server_address;
@@ -42,10 +42,7 @@ int main(int argc, char *argv[]){
   server_address.sin_addr = *((struct in_addr*) hp->h_addr);
 
   //check for error with connection
-  if ((connect(network_socket, (struct sockaddr *) &server_address,sizeof(server_address))) < 0){
-    perror("Error connecting to the remote socket");
-    exit(1);
-  }
+  Connect(network_socket, (struct sockaddr *) &server_address,sizeof(server_address));
 
   //sending the initial message to server
   format_string(msg);

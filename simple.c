@@ -4,6 +4,9 @@
 #include <sys/socket.h>
 #include <netdb.h>
 #include <ctype.h>
+int HEADER=5;
+int MAXSIZE=20;
+
 //#include "funct.c""
 
 /* from stack overfow
@@ -18,7 +21,7 @@
   }
   return str;
 }
-
+//
 /*struct for the message
  */
 struct message {
@@ -26,7 +29,7 @@ struct message {
   char msg[20];
 
 };
-
+//
 int main(int argc, char *argv[]){
   struct hostent *hp;
   char status[6] = "status";
@@ -35,7 +38,7 @@ int main(int argc, char *argv[]){
     printf("\nPlease provide the Server IP address, Port number and the action");
     exit(-1);
   }
-
+//
   hp = gethostbyname(argv[1]);
   if (hp == NULL){
     printf("Unable to resolve name. Please enter a proper IP address.");
@@ -57,4 +60,37 @@ int main(int argc, char *argv[]){
   fgets(first.msg, sizeof(first.msg), stdin);
   first.msg_header = strlen(first.msg)-1;
   printf("\nThe msg is : %s and the length is %d",first.msg, first.msg_header);
+}
+
+void format_string(char sti[]){
+  char formatted_string[MAXSIZE+1];
+  memset(formatted_string,0,strlen(formatted_string));
+  char result[HEADER];
+  memset(result,0,strlen(result));
+  int len = strlen(sti);
+  sprintf(result, "%d", len);
+  strcat(formatted_string,result);
+  for(int i=0;i<(HEADER - strlen(result));i++){
+    strcat(formatted_string, " ");
+  }
+  strcat(formatted_string, sti);
+  strcpy(sti,formatted_string);
+}
+
+
+int main(){
+  char msg[MAXSIZE+1];
+  memset(msg,0,strlen(msg));
+  printf("\nEnter the string: ");
+  // scanf("%s", msg);
+  fgets(msg, MAXSIZE, stdin);
+  int len = strlen(msg);
+  if( msg[len-1] == '\n' ){
+    msg[len-1] = 0;
+  }
+  printf("%s\n", msg);
+  format_string(msg);
+  printf("%s\n",msg);
+  char message[256];
+  sprintf(message, )
 }

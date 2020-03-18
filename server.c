@@ -3,30 +3,61 @@
 
 int seats=5;
 
+void Bind(int fd, const struct sockaddr *sa, socklen_t salen)
+{
+    if (bind(fd, sa, salen) < 0){
+          perror("Bind");
+          close(fd);
+          exit(1);
+    }
+}
+
+int Socket(int family, int type, int protocol)
+{
+    int n;
+    if ((n = socket(family, type, protocol)) < 0){
+            perror("Socket");
+            exit(1);
+    }
+    return(n);
+}
+
+int Accept(int fd, struct sockaddr *sa, socklen_t *salenptr)
+{
+    int n;
+
+again:
+      if ( (n = accept(fd, sa, salenptr)) < 0) {
+#ifdef  EPROTO
+            if (errno == EPROTO || errno == ECONNABORTED)
+#else
+            if (errno == ECONNABORTED)
+#endif
+              goto again;
+            else
+              perror("Accept error");
+      }
+      return(n);
+}
 
 int main(){
   char server_message[MAXSIZE],client_response[MAXSIZE];
   int server_socket,client_socket;
   struct sockaddr_in server_address;
-  //create a socket
 
-  if((server_socket = socket(AF_INET, SOCK_STREAM, 0))<0){
-    perror("socket");
-    exit(1);
-  }
+  //Create a socket
+  server_socket = Socket(AF_INET, SOCK_STREAM, 0);
 
-  //specify an address for the socket
-
+  //Specify an address for the socket
   server_address.sin_family = AF_INET;
   server_address.sin_port = htons(0);
   server_address.sin_addr.s_addr = htons(INADDR_ANY);
 
   //Bind the socket to our specified IP and Port
-  if((bind(server_socket, (struct sockaddr *) &server_address,sizeof(server_address)))<0){
-    perror("bind");
-    close(server_socket);
-    exit(1);
-  }
+  Bind(server_socket, (struct sockaddr *) &server_address,sizeof(server_address));
+
+  //Starting the socket for listening
+  listen(server_socket, 4);
 
   socklen_t len = sizeof(server_address);
   if (getsockname(server_socket, (struct sockaddr *)&server_address, &len) < 0)
@@ -34,24 +65,17 @@ int main(){
   else
   printf("EDM is running on local host, listening on port %d\n", ntohs(server_address.sin_port));
 
-  listen(server_socket, 4);
 
 
   while (1) {
-    // client_socket=accept(server_socket,(struct sockaddr *)NULL, NULL);
-    if ((client_socket=accept(server_socket,(struct sockaddr *)NULL, NULL)) < 0) {
-      if (errno == EINTR){
-        continue;
-      }
-      perror("accept");
-      exit(1);
-    }
+    client_socket=accept(server_socket,(struct sockaddr *)NULL, NULL);
     //receive the message after accepting the connection
     // char client_response[MAXSIZE];
     memset(client_response,0,MAXSIZE*sizeof(char));
     memset(server_message,0,MAXSIZE*sizeof(char));
     Recv(client_socket, client_response);
     printf("%s\n",client_response);
+
     if(strcmp(client_response,"reserve")==0){
       sprintf (server_message, "Failed Reservation.");
       if(seats > 0){

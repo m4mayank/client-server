@@ -48,7 +48,8 @@ void format_string(char sti[]){
   int len = strlen(sti);
   sprintf(result, "%d", len);
   strcat(formatted_string,result);
-  for(int i=0;i<(HEADER - strlen(result));i++){
+  int i;
+  for(i=0;i<(HEADER - strlen(result));i++){
     strcat(formatted_string, " ");
   }
   strcat(formatted_string, sti);

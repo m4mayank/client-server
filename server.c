@@ -1,44 +1,13 @@
-#include "funct.c"
+/*
+ * Some of the code written in here has been referenced from the following sources:
+ * 1) W.R. Stevens, B. Fenner, and A.M. Rudoff. UNIX Network Programming, Volume 1
+ * 2) Jim Frost's IP Sockets Tutorial
+ */
+
+#include "funct.h"
 
 
 int seats=5;
-
-void Bind(int fd, const struct sockaddr *sa, socklen_t salen)
-{
-    if (bind(fd, sa, salen) < 0){
-          perror("Bind");
-          close(fd);
-          exit(1);
-    }
-}
-
-int Socket(int family, int type, int protocol)
-{
-    int n;
-    if ((n = socket(family, type, protocol)) < 0){
-            perror("Socket");
-            exit(1);
-    }
-    return(n);
-}
-
-int Accept(int fd, struct sockaddr *sa, socklen_t *salenptr)
-{
-    int n;
-
-again:
-      if ( (n = accept(fd, sa, salenptr)) < 0) {
-#ifdef  EPROTO
-            if (errno == EPROTO || errno == ECONNABORTED)
-#else
-            if (errno == ECONNABORTED)
-#endif
-              goto again;
-            else
-              perror("Accept error");
-      }
-      return(n);
-}
 
 int main(){
   char server_message[MAXSIZE],client_response[MAXSIZE];
@@ -68,14 +37,15 @@ int main(){
 
 
   while (1) {
-    client_socket=accept(server_socket,(struct sockaddr *)NULL, NULL);
-    //receive the message after accepting the connection
-    // char client_response[MAXSIZE];
+    //Accepting the incoming connections from Client
+    client_socket=Accept(server_socket,(struct sockaddr *)NULL, NULL);
     memset(client_response,0,MAXSIZE*sizeof(char));
     memset(server_message,0,MAXSIZE*sizeof(char));
-    Recv(client_socket, client_response);
-    printf("%s\n",client_response);
 
+    //Receiving the message from Client
+    Recv(client_socket, client_response);
+
+    //Checking the message sent by Client
     if(strcmp(client_response,"reserve")==0){
       sprintf (server_message, "Failed Reservation.");
       if(seats > 0){
@@ -89,12 +59,18 @@ int main(){
         sprintf (server_message, "Shuttle bus has 0 spaces available.");
       }
     }
-    //send the message
+
+    //Encapsulating the message into a format (header)-(message)
+    //here header is the length of message that follows
     format_string(server_message);
+
+    //Send the message to client
     send(client_socket, server_message, sizeof(server_message),0);
+
+    //Closing the Client Socket
     close(client_socket);
   }
-  //close the socket
+  //Close the Server Socket while exiting the program
   close(server_socket);
   return 0;
 }

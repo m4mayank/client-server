@@ -17,7 +17,6 @@ int main(int argc, char *argv[]){
 
   memset(msg,0,20*sizeof(char));
 
-  //printf("%ld\n",port);
   //Checking if all the Arguments are supplied.
   if(argc!=4){
     printf("\nPlease provide the Server IP address, Port number and the action");

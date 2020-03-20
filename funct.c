@@ -60,7 +60,7 @@ void format_string(char sti[]){
 void Bind(int fd, const struct sockaddr *sa, socklen_t salen)
 {
     if (bind(fd, sa, salen) < 0){
-          perror("Bind");
+          perror("Bind error");
           close(fd);
           exit(1);
     }
@@ -72,7 +72,7 @@ int Socket(int family, int type, int protocol)
 {
     int n;
     if ((n = socket(family, type, protocol)) < 0){
-            perror("Socket");
+            perror("Socket error");
             exit(1);
     }
     return(n);

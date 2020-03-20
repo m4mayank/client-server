@@ -27,11 +27,12 @@ int main(int argc, char *argv[]){
   //Validating the IP address entered by the user
   hp = gethostbyname(argv[1]);
   if (hp == NULL){
-    printf("Unable to resolve name. Please enter a proper IP address.");
+    printf("\nUnable to resolve name. Please enter a proper IP address.\n");
     exit(-1);
   }
 
   //Checking if user has asked the status or requested to reserve the seat
+  //accepts status, STATUS, reserve, RESERVE as proper inputs
   if (strcmp(strlwr(argv[3]),"status")==0){
     strcpy(msg,"status");
   }
@@ -61,7 +62,7 @@ int main(int argc, char *argv[]){
   //Sending the initial formatted message to server
   if((send(network_socket, msg, sizeof(msg),0)) < 0)
   {
-    printf("Error sending the message to server");
+    printf("\nError sending the message to server\n");
     exit(1);
   }
 

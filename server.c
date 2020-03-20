@@ -7,7 +7,7 @@
 #include "funct.h"
 
 
-int seats=5;
+int seats=40;
 
 int main(){
   char server_message[MAXSIZE],client_response[MAXSIZE];
@@ -17,7 +17,7 @@ int main(){
   //Create a socket
   server_socket = Socket(AF_INET, SOCK_STREAM, 0);
 
-  //Specify an address for the socket
+  //creating the IP address block which will be later assigned to socket
   server_address.sin_family = AF_INET;
   server_address.sin_port = htons(0);
   server_address.sin_addr.s_addr = htons(INADDR_ANY);
@@ -32,7 +32,7 @@ int main(){
   if (getsockname(server_socket, (struct sockaddr *)&server_address, &len) < 0)
   perror("getsockname");
   else
-  printf("EDM is running on local host, listening on port %d\n", ntohs(server_address.sin_port));
+  printf("EDM is running on localhost, listening on port %d\n", ntohs(server_address.sin_port));
 
 
 
@@ -64,8 +64,10 @@ int main(){
     //here header is the length of message that follows
     format_string(server_message);
 
-    //Send the message to client
-    send(client_socket, server_message, sizeof(server_message),0);
+    //Send the messagei response to client
+    if(send(client_socket, server_message, sizeof(server_message),0)<0){
+      perror("Failed to send message to client");
+    }
 
     //Closing the Client Socket
     close(client_socket);
